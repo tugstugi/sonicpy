@@ -1,0 +1,7 @@
+.idea/
+build/
+dist/
+pysonic.egg-info/
+*.wav
+main.py
+*egg-info/
