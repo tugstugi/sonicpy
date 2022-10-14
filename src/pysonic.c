@@ -2,6 +2,7 @@
 // https://stackabuse.com/enhancing-python-with-custom-c-extensions/
 // https://www.geeksforgeeks.org/python-opaque-pointers-in-c-extension-modules/
 //
+#define PY_SSIZE_T_CLEAN 1
 
 #include <stdio.h>
 #include "Python.h"
@@ -116,7 +117,7 @@ static PyObject* py_sonic_get_quality(PyObject* self, PyObject* args) {
 
 static PyObject* py_sonic_write_short(PyObject* self, PyObject* args) {
     short *buffer;
-    int buffer_length = 0;
+    Py_ssize_t buffer_length = 0;
     if (! PyArg_ParseTuple(args, "y#", &buffer, &buffer_length)) { return NULL; }
     buffer_length = buffer_length / 2;  // bytes to shorts
     return PyBool_FromLong(sonicWriteShortToStream(PY_SONIC(self)->stream, buffer, buffer_length));
