@@ -1,7 +1,7 @@
 import glob
 from setuptools import setup, Extension
 
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 
 pysonic_lib = Extension(name='sonic',
                         define_macros=[('VERSION', '"%s"' % VERSION)],

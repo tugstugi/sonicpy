@@ -135,6 +135,26 @@ static PyObject* py_sonic_read_short(PyObject* self, PyObject* args) {
     return PyBytes_FromStringAndSize((const char *) buffer, 2 * count);
 }
 
+static PyObject* py_sonic_write_float(PyObject* self, PyObject* args) {
+    float *buffer;
+    Py_ssize_t buffer_length = 0;
+    if (! PyArg_ParseTuple(args, "y#", &buffer, &buffer_length)) { return NULL; }
+    buffer_length = buffer_length / 4;  // bytes to float
+    return PyBool_FromLong(sonicWriteFloatToStream(PY_SONIC(self)->stream, buffer, buffer_length));
+}
+
+static PyObject* py_sonic_read_float(PyObject* self, PyObject* args) {
+    float buffer[READ_BUFFER_SIZE];
+    int maxSamples = 0;
+    if (! PyArg_ParseTuple(args, "i", &maxSamples)) { return NULL; }
+    if (maxSamples < 1 || maxSamples > READ_BUFFER_SIZE) {
+        PyErr_SetString(PyExc_TypeError, "maxSamples to be read should be between 1 and 22050");
+        return NULL;
+    }
+    int count = sonicReadFloatFromStream(PY_SONIC(self)->stream, buffer, maxSamples);
+    return PyBytes_FromStringAndSize((const char *) buffer, 4 * count);
+}
+
 static PyObject* py_sonic_samples_available(PyObject* self, PyObject* args) {
     return Py_BuildValue("i", sonicSamplesAvailable(PY_SONIC(self)->stream));
 }
@@ -155,6 +175,8 @@ static PyMethodDef sonic_methods[] = {
 
     { "write_short", py_sonic_write_short, METH_VARARGS, "" },
     { "read_short", py_sonic_read_short, METH_VARARGS, "" },
+    { "write_float", py_sonic_write_float, METH_VARARGS, "" },
+    { "read_float", py_sonic_read_float, METH_VARARGS, "" },
     { "samples_available", py_sonic_samples_available, METH_NOARGS, "" },
     { "flush", py_sonic_flush, METH_NOARGS, "" },
     { NULL }
